@@ -330,8 +330,8 @@ const SCHEDULE = [
 
 /* WhatsApp number for feedback, international format without + (e.g. "2499xxxxxxxx"). Leave "" to hide the button. */
 /* Feedback Google Form (prefilled link base + page field). Leave FEEDBACK_FORM "" to hide the button. */
-const FEEDBACK_FORM = "";
-const FEEDBACK_FIELD = "";
+const FEEDBACK_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSesFB_X1c81qEh2dxTpyIz3So3nlDeaJUm73-NqNqvtx_lujA/viewform?usp=pp_url";
+const FEEDBACK_FIELD = "entry.425341980";
 
 /* Leaderboard form (prefilled link). */
 const LB_FORM = "https://docs.google.com/forms/d/e/1FAIpQLScOWBtKE2f5mPKLhysEZxEm1zKwGClt2J51VTU4vncY2tO5VA/viewform?usp=pp_url";
@@ -816,7 +816,8 @@ function homeView(){
   <section><span class="eyebrow">Courses</span><div class="folders">${COURSES.map(c => {
     const done = c.lectures.filter((_,i) => (progress[pkey(c,i+1)]||{}).read).length;
     return `<a class="folder" href="#${c.id}"><span class="lbl">Course folder</span><b>${esc(c.name)}</b><small>${esc(c.teacher)} · ${c.lectures.length} lectures · ${done} read</small><span class="fbar"><i style="width:${done/c.lectures.length*100}%"></i></span></a>`;
-  }).join("")}</div></section>`;
+  }).join("")}</div></section>
+  ${FEEDBACK_FORM ? `<a class="fb" href="${FEEDBACK_FORM}&${FEEDBACK_FIELD}=${encodeURIComponent("عام")}" target="_blank" rel="noopener" dir="rtl" lang="ar">عندك ملاحظة أو اقتراح للموقع؟ أرسليه هنا</a>` : ""}`;
 }
 function courseTabs(c, cur){
   const tabs = [["", "Lectures", c.lectures.length], ["-defs","Definitions", c.lectures.reduce((n,l)=>n+l.defs.length,0)], ["-terms","Terms", c.terms.length], ["-quiz","General questions", c.general.length], ["-exam","Exam", examPool(c).length]];
@@ -859,7 +860,7 @@ function lectureView(c, n){
     <button type="button" class="btn ${p.review?"on":""}" data-k="review">${p.review?"✓ Reviewed":"Mark as reviewed"}</button>
   </div>
   <section><h2>Lecture questions</h2><div class="list">${l.questions.map((q,i) => qHTML(q, `${c.id}-${n}-${i}`)).join("")}</div></section>
-  ${FEEDBACK_FORM ? `<a class="fb" href="${FEEDBACK_FORM}&${FEEDBACK_FIELD}=${encodeURIComponent(`${c.name} – Lecture ${n}`)}" target="_blank" rel="noopener" dir="rtl" lang="ar">لقيتي غلط أو عندك اقتراح؟ أرسلي ملاحظتك</a>` : ""}
+  ${FEEDBACK_FORM ? `<a class="fb" href="${FEEDBACK_FORM}&${FEEDBACK_FIELD}=${encodeURIComponent(`${c.name} – المحاضرة ${n}`)}" target="_blank" rel="noopener" dir="rtl" lang="ar">لقيتي غلط أو عندك اقتراح؟ أرسلي ملاحظتك</a>` : ""}
   ${n < c.lectures.length ? `<a class="back" href="#${c.id}-lec-${n+1}">Next: Lecture ${n+1} →</a>` : ""}`;
 }
 function defsView(c){
