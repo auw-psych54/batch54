@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AUW Psychology Students · Batch 54</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1b47">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Batch 54">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
@@ -137,6 +142,16 @@ section{display:grid;gap:12px}
 .slide .ar{background:var(--note);border-top:1px dashed var(--line);border-right:4px solid var(--lamp);padding:12px 20px}
 .slide .ar b.lbl{font-size:.78rem;color:var(--muted);display:block;font-weight:600}
 .slide .ar p{margin:0 0 6px}
+.cd{display:flex;gap:14px;align-items:center;text-decoration:none;color:var(--on-navy);background:var(--navy);border-radius:14px;padding:12px 16px;margin-bottom:14px;font-family:var(--ar)}
+.cd.soon{background:var(--bad)}
+.cd-n{font-family:var(--display);font-size:2rem;font-weight:800;color:var(--lamp);min-width:2.2ch;text-align:center}
+.cd.soon .cd-n{color:#fff}
+.cd > span > b{display:block}.cd small{opacity:.85}
+.inst{position:relative;background:var(--note);border:1px solid var(--line);border-right:4px solid var(--lamp);border-radius:14px;padding:12px 16px;margin-bottom:14px;font-family:var(--ar);line-height:1.7}
+.inst p{margin:4px 0}.inst .btn{margin:6px 0}
+.inst-x{position:absolute;left:8px;top:6px;background:none;border:0;color:var(--muted);font-size:1rem;cursor:pointer}
+.mi .eyebrow{display:block;margin-bottom:4px}
+.rv{margin-top:22px}.rv h2{font-size:1.2rem}.rv .recap{margin-top:8px}
 .slide .tip{background:var(--accent-soft);border-top:1px solid var(--line);border-right:4px solid var(--accent);padding:12px 20px;font-family:var(--ar);line-height:1.8}
 .recap{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--lamp);border-radius:14px;padding:16px 20px;margin-top:18px;font-family:var(--ar);line-height:1.8}
 .recap h2{margin:0 0 10px}.recap h4{margin:14px 0 6px;font-size:1rem}
@@ -924,6 +939,29 @@ function alertsHTML(){
     return `<div class="alert ${cls}"><div class="days">${when}</div><div class="info"><b>${esc(a.title)}<span class="pill ${a.type}">${esc(a.label)}</span></b><small>${a.course?esc(a.course)+" · ":""}${d}${a.note?" · "+esc(a.note):""}</small></div></div>`;
   }).join("") + `</div>`;
 }
+function countdownHTML(){
+  const today = new Date(sudanNow().date + "T00:00:00");
+  const ex = ALERTS.filter(a => a.type === "exam").map(a => ({...a, left: Math.round((new Date(a.date+"T00:00:00") - today)/864e5)})).filter(a => a.left >= 0).sort((x,y)=>x.left-y.left)[0];
+  if (!ex) return "";
+  const msg = ex.left === 0 ? "الامتحان النهارده! بالتوفيق يا بطلة 💪" : ex.left === 1 ? "الامتحان بكرة! راجعي الخلاصات وارتاحي بدري 🌙" : `يوم باقي للامتحان`;
+  return `<a class="cd ${ex.left<=3?"soon":""}" href="#${COURSES[0].id}-review" dir="rtl" lang="ar"><span class="cd-n">${ex.left}</span><span><b>${esc(ex.title)}</b><small>${msg}${ex.left>1?" · افتحي مراجعة ليلة الامتحان ←":""}</small></span></a>`;
+}
+let installEvt = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; const b = $("inst-btn"); if (b) b.hidden = false; });
+function installHTML(){
+  const standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone;
+  if (standalone) return "";
+  try { if (localStorage.getItem("auw-inst-x")) return ""; } catch(e){}
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  return `<div class="inst" dir="rtl" lang="ar"><button type="button" class="inst-x" data-instx aria-label="إخفاء">✕</button><b>📲 خلي الموقع في شاشة تلفونك</b>
+  <p>بيفتح زي التطبيق، وبيشتغل حتى لو النت قاطع.</p>
+  ${ios ? `<p>من Safari: اضغطي زر المشاركة <b>⬆️</b>، وبعدها <b>Add to Home Screen</b>.</p>` : `<button type="button" class="btn" id="inst-btn" ${installEvt?"":"hidden"}>أضيفي الموقع</button><p class="muted">لو الزر ما ظهر: من قائمة المتصفح <b>⋮</b> اختاري <b>Add to Home screen</b> أو <b>Install app</b>.</p>`}</div>`;
+}
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-instx]")){ try { localStorage.setItem("auw-inst-x","1"); } catch(err){} const x = e.target.closest(".inst"); if (x) x.remove(); }
+  if (e.target.id === "inst-btn" && installEvt){ installEvt.prompt(); installEvt.userChoice.finally(() => { installEvt = null; const x = document.querySelector(".inst"); if (x) x.remove(); }); }
+});
+if ("serviceWorker" in navigator && location.protocol === "https:") window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
 function homeView(){
   const c0 = COURSES[0];
   const nTerms = COURSES.reduce((n,c)=>n+c.terms.length,0), nDefs = COURSES.reduce((n,c)=>n+c.lectures.reduce((m,l)=>m+l.defs.length,0),0), nLec = COURSES.reduce((n,c)=>n+c.lectures.length,0);
@@ -932,7 +970,8 @@ function homeView(){
   const cont = ll ? `<a class="cont" href="#${lc.id}-lec-${last.n}"><span>Continue reading<small>Lecture ${last.n}: ${esc(ll.en)}</small></span><span class="arr">→</span></a>`
                   : `<a class="cont" href="#${c0.id}-lec-1"><span>Start studying<small>Lecture 1: ${esc(c0.lectures[0].en)}</small></span><span class="arr">→</span></a>`;
   const first = myName().trim().split(/\s+/)[0];
-  return `<h2 class="hello" dir="rtl" lang="ar">${first ? `مرحباً ${esc(first)} 👋` : "مرحباً بيك 👋"}</h2>
+  return `${countdownHTML()}<h2 class="hello" dir="rtl" lang="ar">${first ? `مرحباً ${esc(first)} 👋` : "مرحباً بيك 👋"}</h2>
+  ${installHTML()}
   <section><div class="stats">
       <div class="stat"><b>${nLec}</b><span>lectures</span></div>
       <div class="stat streak"><b>${streak()}</b><span>day streak</span></div>
@@ -950,7 +989,7 @@ function homeView(){
   ${FEEDBACK_FORM ? `<a class="fb" href="${FEEDBACK_FORM}&${FEEDBACK_FIELD}=${encodeURIComponent("عام")}" target="_blank" rel="noopener" dir="rtl" lang="ar">عندك ملاحظة أو اقتراح للموقع؟ أرسليه هنا</a>` : ""}`;
 }
 function courseTabs(c, cur){
-  const tabs = [["", "Lectures", c.lectures.length], ["-defs","Definitions", c.lectures.reduce((n,l)=>n+l.defs.length,0)], ["-terms","Terms", c.terms.length], ["-quiz","General questions", c.general.length], ["-exam","Exam", examPool(c).length]];
+  const tabs = [["", "Lectures", c.lectures.length], ["-defs","Definitions", c.lectures.reduce((n,l)=>n+l.defs.length,0)], ["-terms","Terms", c.terms.length], ["-quiz","General questions", c.general.length], ["-exam","Exam", examPool(c).length], ["-review","Exam-night review", c.lectures.length], ["-miss","My mistakes", missList(c).length]];
   return `<div class="chead"><span class="eyebrow">Course folder</span><h2>${esc(c.name)}</h2><p class="muted">${esc(c.teacher)}</p></div>
   <nav class="ctabs" aria-label="Course sections">${tabs.map(([h,l,n]) => `<a href="#${c.id}${h}" ${cur===h?'aria-current="page"':""}>${l}<span class="c">${n}</span></a>`).join("")}</nav>`;
 }
@@ -1101,6 +1140,30 @@ function termsView(c){
   <label for="q-search" class="muted">Search in English or Arabic</label>
   <input id="q-search" class="search" type="search" placeholder="e.g. Ethics or السرية">
   <div class="gl">${sorted.map(t => `<button type="button" class="gi" data-t="${t.i}" data-s="${esc((t.w+" "+t.ar).toLowerCase())}"><span class="w">${esc(t.w)}</span><span dir="rtl" lang="ar">${esc(t.ar)}</span><small dir="rtl" lang="ar">${esc(t.n)}</small></button>`).join("")}</div></section>`;
+}
+/* mistakes: question ids answered wrong; removed once answered right */
+function missGet(){
+  try { const v = localStorage.getItem("auw-miss"); if (v) return JSON.parse(v); } catch(e){}
+  const m = {}; const ft = firstTries(); Object.keys(ft).forEach(k => { if (ft[k] === false) m[k] = 1; });
+  try { localStorage.setItem("auw-miss", JSON.stringify(m)); } catch(e){}
+  return m;
+}
+function missSet(m){ try { localStorage.setItem("auw-miss", JSON.stringify(m)); } catch(e){} }
+function qById(c, id){
+  const p = id.split("-"); if (p[0] !== c.id) return null;
+  if (p[1] === "g") { const q = c.general[+p[2]]; return q ? {q, from:"General questions"} : null; }
+  const l = c.lectures[+p[1]-1], q = l && l.questions[+p[2]]; return q ? {q, from:`Lecture ${p[1]}`} : null;
+}
+const missList = c => Object.keys(missGet()).map(id => ({id, ...(qById(c,id)||{})})).filter(x => x.q && x.q.opts);
+function missView(c){
+  const items = missList(c);
+  const intro = `<p class="muted" dir="rtl" lang="ar">هنا بتتجمع كل الأسئلة الغلطتي فيها. أعيدي حلها، وأي سؤال تجاوبيهو صاح بيختفي من القائمة في المرة الجاية.</p>`;
+  if (!items.length) return courseTabs(c,"-miss") + `<section>${intro}<div class="empty" dir="rtl" lang="ar">ما في أسئلة غلطانة هسه 🎉 لمن تغلطي في سؤال في أي محاضرة، حيظهر هنا.</div></section>`;
+  return courseTabs(c,"-miss") + `<section>${intro}<p class="muted" id="miss-n">${items.length} question${items.length===1?"":"s"} to fix</p><div class="list">${items.map(x => `<div class="mi"><span class="eyebrow">${x.from}</span>${qHTML(x.q, x.id)}</div>`).join("")}</div></section>`;
+}
+function reviewView(c){
+  return courseTabs(c,"-review") + `<section dir="rtl" lang="ar"><p class="muted">خلاصة المحاضرات كلها في صفحة واحدة: الجداول والقوائم وأهم النقاط. راجعيها قبل الامتحان، وبعدها جرّبي <a href="#${c.id}-exam">الامتحان</a> و<a href="#${c.id}-cards">البطاقات</a>.</p></section>` +
+    c.lectures.map((l,i) => `<section class="rv"><h2 dir="ltr">Lecture ${i+1}: ${esc(l.en)}</h2>${recapHTML(EXTRAS[i]).replace("<h2>📌 خلاصة المحاضرة</h2>","")}<a class="back" href="#${c.id}-lec-${i+1}">اقري المحاضرة كاملة ←</a></section>`).join("");
 }
 const quizView = c => courseTabs(c,"-quiz") + `<section><p class="muted">Questions covering the whole course. Useful before the exam.</p><div class="list">${c.general.map((q,i) => qHTML(q, `${c.id}-g-${i}`)).join("")}</div></section>`;
 
@@ -1430,6 +1493,8 @@ function route(){
     else if (rest === "-terms") view = termsView(c);
     else if (rest === "-quiz") view = quizView(c);
     else if (rest === "-exam") view = examView(c);
+    else if (rest === "-review") view = reviewView(c);
+    else if (rest === "-miss") view = missView(c);
     else view = lecturesView(c);
     if (m){ setTimeout(() => wireProgress(c, +m[1])); try { localStorage.setItem("auw-last", JSON.stringify({c:c.id, n:+m[1]})); } catch(e){} }
   }
@@ -1491,6 +1556,7 @@ document.addEventListener("click", e => {
     if (o.dataset.qid){
       const ft = firstTries(); if (!(o.dataset.qid in ft)){ ft[o.dataset.qid] = ok; try { localStorage.setItem("auw-first", JSON.stringify(ft)); } catch(err){} }
       if (addEvent("q:" + o.dataset.qid, ok ? 1 : 0) && ok) toast("+1 نقطة");
+      const mm = missGet(); if (ok){ if (mm[o.dataset.qid]){ delete mm[o.dataset.qid]; missSet(mm); if (o.closest(".mi")) toast("أحسنتِ! السؤال اتشال من أخطائك ✅"); } } else if (!mm[o.dataset.qid]){ mm[o.dataset.qid] = 1; missSet(mm); }
     } else if (o.dataset.qotd){
       if (addEvent("d:" + sudanNow().date, ok ? 5 : 0)){ if (ok){ bump("auw-qotd-n"); toast("+5 نقاط 🌟"); } }
     }
