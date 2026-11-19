@@ -137,6 +137,16 @@ section{display:grid;gap:12px}
 .slide .ar{background:var(--note);border-top:1px dashed var(--line);border-right:4px solid var(--lamp);padding:12px 20px}
 .slide .ar b.lbl{font-size:.78rem;color:var(--muted);display:block;font-weight:600}
 .slide .ar p{margin:0 0 6px}
+.slide .tip{background:var(--accent-soft);border-top:1px solid var(--line);border-right:4px solid var(--accent);padding:12px 20px;font-family:var(--ar);line-height:1.8}
+.recap{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--lamp);border-radius:14px;padding:16px 20px;margin-top:18px;font-family:var(--ar);line-height:1.8}
+.recap h2{margin:0 0 10px}.recap h4{margin:14px 0 6px;font-size:1rem}
+.recap .tw{overflow-x:auto}.recap table{width:100%;border-collapse:collapse;font-size:.92rem}
+.recap th,.recap td{border:1px solid var(--line);padding:6px 10px;text-align:right;vertical-align:top}
+.recap thead th{background:var(--navy);color:var(--on-navy)}.recap tbody th{background:var(--accent-soft);white-space:nowrap}
+.recap .rc-m p{background:var(--note);border-radius:10px;padding:8px 12px;margin:0 0 8px}
+.recap ol{margin:0;padding-right:1.3em}
+.ltr{display:block;text-align:left;margin:4px 0}
+
 .term{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--lamp);text-decoration-thickness:2px;text-underline-offset:3px}
 .term:hover{background:var(--note)}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -951,7 +961,77 @@ function lecturesView(c){
       return `<a class="lec" href="#${c.id}-lec-${i+1}"><span class="num">${String(i+1).padStart(2,"0")}</span><span class="t">${esc(l.en)}<small>${l.slides.length} slides · ${l.questions.length} questions</small></span><span class="marks"><span class="mk ${p.read?"on":""}">Read</span><span class="mk ${p.review?"on":""}">Reviewed</span></span></a>`; }).join("")}</div>
     <p class="muted" dir="rtl" lang="ar">جوة المحاضرة، اضغطي على أي مصطلح ملوّن عشان تسمعي نطقه وتشوفي معناه.</p></section>`;
 }
-function slideHTML(s, n, total){
+/* EXTRAS-START: examples, tables, memory tricks, summaries per lecture (Arabic guidance) */
+const EXTRAS = [
+{ // Lecture 1
+ tips:{
+  0:`<b>الفكرة ببساطة:</b> الـ Administration بتقرر <b>شنو</b> نعمل، والـ Management بتقرر <b>كيف</b> ننفّذه.`,
+  2:`<b>مثال من الواقع:</b> وزارة الصحة قررت تفتح عيادة صحة نفسية في كل ولاية، وتكون الخدمة مجانية للنازحين. ده <b>Administration</b>: قرار كبير وسياسة عامة.`,
+  4:`<b>مثال من الواقع:</b> مديرة العيادة بتوزع شفتات الأخصائيات، وتتابع الأدوية والميزانية، وتتأكد إنو المريض ما ينتظر كتير. ده <b>Management</b>: شغل يومي وتنفيذ.<br><b>ليه مهم ليك؟</b> لأنك حتشتغلي جوه مؤسسة، ولمن تفهمي منو بيقرر ومنو بينفّذ، بتعرفي توصلي اقتراحك للشخص الصاح.`,
+  5:`<b>مثال:</b> العيادة متوقعة زيادة في حالات الصدمة بعد موجة نزوح جديدة. فبتخطط من بدري: كم أخصائية محتاجين؟ كم جلسة في الأسبوع؟ دي هي Planning: تتوقعي المستقبل وتجهزي ليهو.`,
+  6:`<b>مثال:</b> العيادة قسّمت الشغل: قسم استقبال، وقسم جلسات فردية، وقسم جلسات جماعية، وكل قسم ليهو مسؤولة عندها صلاحية. ده Organizing.`,
+  8:`<b>طريقة حفظ:</b> عناصر الـ Directing التلاتة: <bdi dir="ltr"><b>MCL</b></bdi>، يعني Motivation · Communication · Leadership.`,
+  9:`<b>طريقة حفظ:</b> خطوات الـ Controlling: <b>معيار ← قياس ← تصحيح</b> (Standards ← Measure ← Correct).<br><b>مثال:</b> المعيار إنو المريض ما ينتظر أكتر من أسبوع لموعدو. قسنا ولقينا الانتظار أسبوعين، فصحّحنا وزدنا المواعيد.`
+ },
+ tables:[{title:"Administration vs Management", head:["","Administration","Management"], rows:[
+  ["السؤال","شنو؟","كيف؟"],
+  ["النوع","تحديدية (determinative)","تنفيذية (executive)"],
+  ["المستوى","عليا","وسطى وتشغيلية"],
+  ["الشغل","سياسات وأهداف","تنسيق وتنفيذ يومي"]]}],
+ memo:[`وظائف الـ Management السبعة: <bdi dir="ltr"><b>POSDCCD</b></bdi><br>احفظيها بالجملة دي: <i dir="ltr" class="ltr">"<b>P</b>lease <b>O</b>rder <b>S</b>ome <b>D</b>elicious <b>C</b>ake, <b>C</b>offee &amp; <b>D</b>ates"</i> ☕<br><span dir="ltr" class="ltr">Planning · Organizing · Staffing · Directing · Controlling · Communication · Decision-making</span>`],
+ summary:["الـ Administration بتحدد الهدف العام والسياسات والأهداف الكبيرة.","الـ Management بتنفّذ وبتنسّق الشغل اليومي، وهي علم وفن ومهنة.","للـ Management سبع وظائف: POSDCCD.","الـ Staffing اسمه التاني Human Resource Management، وخطواتو خمسة.","الـ Directing عناصرو تلاتة: Motivation, Communication, Leadership.","الـ Controlling يعني: معيار، بعدو قياس، بعدو تصحيح، وهو مسؤولية كل مدير."]
+},
+{ // Lecture 2
+ tips:{
+  0:`<b>ركّزي في السنة:</b> آخر سياسة صحة نفسية في السودان اتنشرت سنة <b>2008</b>.`,
+  1:`<b>طريقة حفظ:</b> القانون اتكتب كمسودة سنة <b>1998</b> واتجاز في البرلمان سنة <b>2018</b>، يعني عشرين سنة انتظار.<br><b>انتبهي:</b> الـ Policy (2008) غير الـ Act (2018). الأسئلة ممكن تلخبط بيناتهم.`,
+  2:`<b>ليه مهم؟</b> الخدمات متركزة في العاصمة وما في كوادر كفاية، عشان كده ناس كتار في الولايات بيمشوا للمعالجين الشعبيين والدينيين.`,
+  3:`<b>الفكرة:</b> بدل ما نحارب المعالجين الشعبيين، بنفتح حوار معاهم ونتعاون. في مراكز علاج شعبي بقت بيجيها مساعدين طبيين مدرَّبين في الطب النفسي يشخّصوا ويتدخلوا.`,
+  4:`<b>طريقة حفظ:</b> النظام لامركزي بتلاتة مستويات: <b>اتحادي ← ولائي ← محلي</b>. كل ما ننزل مستوى، الشغل بيقرب من الناس أكتر.`,
+  6:`<b>مثال:</b> المحلية بتنظم جمع النفايات وتراقب مياه الشرب عشان تمنع الكوليرا، أو بتعمل حملة توعية عن الملاريا.`
+ },
+ tables:[{title:"مستويات النظام الصحي في السودان", head:["المستوى","الجهة","أهم مسؤولياتها"], rows:[
+  ["اتحادي","Federal Ministry of Health","السياسات، التخطيط الاستراتيجي، العلاقات الدولية، دعم الولايات، متابعة صحة البلد"],
+  ["ولائي","State Ministries of Health","تخطيط الخدمات في الولاية، الرعاية الثانوية والتخصصية، دعم المحليات"],
+  ["محلي","Localities","الرعاية الصحية الأولية (PHC)، صحة البيئة، صحة المجتمع"]]}],
+ memo:[`الأرقام المهمة: <b>2008</b> سياسة الصحة النفسية · <b>1998</b> مسودة القانون · <b>2018</b> إجازة القانون.`,`المستويات من فوق لتحت: <bdi dir="ltr"><b>F → S → L</b></bdi> (Federal ← State ← Locality).`],
+ summary:["آخر سياسة صحة نفسية في السودان اتنشرت سنة 2008، ومن مكوناتها إدخال الصحة النفسية في الرعاية الأولية وتوفير الكوادر.","قانون الصحة النفسية اتكتب سنة 1998 واتجاز سنة 2018، وبيغطي حقوق المرضى والعلاج الطوعي والإجباري.","الخدمات متركزة في العاصمة، وفي نقص كبير في الكوادر المدرَّبة.","المعالجين الشعبيين جزء من ثقافة المجتمع، وفي محاولات للتعاون بيناتهم وبين المختصين.","النظام الصحي لامركزي بتلاتة مستويات: اتحادي، وولائي، ومحلي."]
+},
+{ // Lecture 3
+ tips:{
+  1:`<b>الفكرة ببساطة:</b> الـ Policy بتقول ليك <b>شنو القاعدة</b>، والـ Procedure بتقول ليك <b>كيف تطبقيها خطوة بخطوة</b>.<br><b>مثال:</b> Policy: "ممنوع التصوير جوه العيادة". Procedure: "1. نبلّغ العميل أول ما يجي. 2. لو صوّر، نوضح ليهو إنو ده خرق للسرية."`,
+  3:`<b>انتبهي:</b> مديرة مكتب العيادة شغلها <b>إداري بس</b>: تلفونات، ومواعيد، وملفات، وبريد. ما عندها أي دور في الإرشاد أو الإشراف.`,
+  4:`<b>طريقة حفظ:</b> مديرة المكتب <b>ما</b> بتعمل إرشاد، و<b>ما</b> بتوزع العملاء على المرشدين، و<b>ما</b> بتحل مشاكل العملاء، و<b>ما</b> بتطلع على الجلسات ولا الملفات.<br><b>ليه؟</b> عشان سرية العميل.`,
+  5:`<b>ركّزي:</b> كل سياسة في المحاضرة دي ليها نفس الشكل: <b>Policy ← Purpose ← Procedure</b>. لو جاك سؤال عن سياسة، رتّبي إجابتك بالشكل ده.`,
+  8:`<b>أهم جملة:</b> "do not be a hero". سلامتك أولاً: أقعدي بينك وبين الباب، ولو الموقف اتصاعد اطلعي أو اصرخي طالبة مساعدة.`
+ },
+ tables:[{title:"Policy vs Procedure", head:["","Policy","Procedure"], rows:[
+  ["بتجاوب على","شنو القاعدة؟","كيف نطبقها؟"],
+  ["الشكل","توجيه عام","خطوات مرقّمة"],
+  ["الهدف","توضيح التوقعات والمسموح والممنوع","توحيد طريقة الشغل"]]}],
+ memo:[`شكل أي سياسة في العيادة: <bdi dir="ltr"><b>PPP</b></bdi>، يعني Policy · Purpose · Procedure.`,`السياسات الخمسة في المحاضرة: ساعات العمل · رعاية الأطفال · التلفون · السلوك العدواني · حدود مديرة المكتب.`],
+ summary:["الـ Policy قاعدة عامة بتوضح المتوقع، والـ Procedure خطوات محددة للتطبيق.","السياسات بتوضح المقبول والمرفوض، وبتساعد في إدارة الموظفين.","مديرة مكتب العيادة شغلها إداري بس، وما ليها علاقة بالإرشاد ولا بملفات العملاء.","ما في زول يقعد براهو في العيادة مع عميل.","مع العميل العدواني: سلامتك أولاً، وdo not be a hero."]
+},
+{ // Lecture 4
+ tips:{
+  1:`<b>الفكرة:</b> الأخلاقيات هي الأساس البيبني الثقة. العميل لو ما حس إنك حتحافظي على سرّو، ما حيتكلم بصراحة، والعلاج ما حينجح.`,
+  4:`<b>الفرق:</b> Beneficence يعني تعملي الخير وتفيدي العميل. Nonmaleficence يعني ما تأذيه. الاتنين مع بعض.`,
+  6:`<b>مثال:</b> لو قلتي للعميل "حنتقابل الأسبوع الجاي" لازم توفي. والـ Integrity يعني ما تبالغي في نتايج بحثك ولا تزوّريها.`,
+  8:`<b>مثال:</b> جاتك حالة إدمان وإنتي ما متدربة عليها، فتحوّليها لمختصة. لكن في الطوارئ بتساعدي لحدي ما المختصة توصل.`,
+  9:`<b>طريقة حفظ:</b> مبادئ جمع البيانات السبعة: <bdi dir="ltr"><b>DPCIVAR</b></bdi><br><span dir="ltr" class="ltr">Do no harm · Privacy · Confidentiality · Informed consent · Voluntary · Act professionally · Right to service</span>`,
+  12:`<b>مثال:</b> مدرسة طلبت منك تقيّمي طالبة. لازم الكل يكون عارف دورك شنو، والنتيجة حتُستخدم في شنو، وحدود السرية لحدي وين. وسجّلي كل حاجة.`
+ },
+ tables:[{title:"المبادئ العامة الخمسة", head:["المبدأ","يعني"], rows:[
+  ["Beneficence &amp; Nonmaleficence","أفيدي وما تأذي"],
+  ["Fidelity &amp; Responsibility","ابني الثقة وتحمّلي مسؤولية شغلك"],
+  ["Integrity","الصدق والدقة، بلا غش ولا تزوير"],
+  ["Justice","العدل: الكل يستاهل نفس جودة الخدمة"],
+  ["Respect for Rights &amp; Dignity","احترام الكرامة والخصوصية وحق الاختيار"]]}],
+ memo:[`المبادئ الخمسة بالترتيب: <bdi dir="ltr"><b>BFIJR</b></bdi><br>احفظيها بالجملة دي: <i dir="ltr" class="ltr">"<b>B</b>e <b>F</b>air <b>I</b>n <b>J</b>udging <b>R</b>ight"</i> ⚖️`,`مبادئ جمع البيانات السبعة: <bdi dir="ltr"><b>DPCIVAR</b></bdi>`],
+ summary:["الأخلاقيات بتبني الثقة بين المرشدة والعميل، وبتخلي مصلحة العميل أولاً.","المبادئ العامة الخمسة: BFIJR.","الـ Competence يعني ما تشتغلي برّا حدود تدريبك إلا في الطوارئ، وتحوّلي لمختصة لمن تحتاجي.","جمع البيانات ليهو سبعة مبادئ، أهمها: ما تأذي، والسرية، والموافقة المستنيرة، والمشاركة الطوعية.","مع الطرف التالت وضّحي الدور والاستخدام وحدود السرية، وسجّلي كل شي."]
+}];
+/* EXTRAS-END */
+function slideHTML(s, n, total, tip){
   const seen = new Set(), lines = s.en; let html = `<h3>${mark(esc(lines[0]), seen)}</h3>`, inList = false;
   lines.slice(1).forEach(l => {
     if (l.startsWith("- ")){ if(!inList){ html += "<ul>"; inList = true; } html += `<li>${mark(esc(l.slice(2)), seen)}</li>`; }
@@ -959,7 +1039,7 @@ function slideHTML(s, n, total){
   });
   if (inList) html += "</ul>";
   const seenAr = new Set();
-  return `<div class="slide"><div class="sn">Slide ${String(n).padStart(2,"0")}<span>${n} / ${total}</span></div><div class="en">${html}</div><div class="ar" dir="rtl" lang="ar"><b class="lbl">الشرح</b>${s.ar.map(p => `<p>${mark(p, seenAr)}</p>`).join("")}</div></div>`;
+  return `<div class="slide"><div class="sn">Slide ${String(n).padStart(2,"0")}<span>${n} / ${total}</span></div><div class="en">${html}</div><div class="ar" dir="rtl" lang="ar"><b class="lbl">الشرح</b>${s.ar.map(p => `<p>${mark(p, seenAr)}</p>`).join("")}</div>${tip ? `<div class="tip" dir="rtl" lang="ar">💡 ${tip}</div>` : ""}</div>`;
 }
 let qid = 0; const QEX = {};
 function qHTML(q, sid){
@@ -969,11 +1049,21 @@ function qHTML(q, sid){
   return `<div class="q"><p>${esc(q.q)}</p><button type="button" class="reveal" data-r="${k}">Show answer</button><div class="ans" id="ans-${k}" hidden>${esc(q.ans)}</div></div>`;
 }
 const defHTML = d => `<div class="def" data-s="${esc((d.t+" "+d.en+" "+d.ar).toLowerCase())}"><div class="dt">${esc(d.t)} ${sayBtn(d.t)}</div><p class="den">${esc(d.en)}</p><p class="dar" dir="rtl" lang="ar">${esc(d.ar)}</p></div>`;
+function recapHTML(x){
+  if (!x) return "";
+  const tbl = t => `<div class="rc-t"><h4>${t.title}</h4><div class="tw"><table><thead><tr>${t.head.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map((c,i)=>i?`<td>${c}</td>`:`<th>${c}</th>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
+  return `<section class="recap" dir="rtl" lang="ar"><h2>📌 خلاصة المحاضرة</h2>
+  ${(x.tables||[]).map(tbl).join("")}
+  ${x.memo&&x.memo.length ? `<div class="rc-m"><h4>🧠 طرق الحفظ</h4>${x.memo.map(m=>`<p>${m}</p>`).join("")}</div>` : ""}
+  ${x.summary&&x.summary.length ? `<div class="rc-s"><h4>✅ أهم النقاط</h4><ol>${x.summary.map(t=>`<li>${t}</li>`).join("")}</ol></div>` : ""}
+  </section>`;
+}
 function lectureView(c, n){
   const l = c.lectures[n-1], p = progress[pkey(c,n)] || {};
   return `<a class="back" href="#${c.id}">← All lectures</a>
   <div class="lhead"><p class="muted">${esc(c.name)} · Lecture ${n} of ${c.lectures.length}</p><h2>${esc(l.en)}</h2></div>
-  ${l.slides.map((s,i) => slideHTML(s, i+1, l.slides.length)).join("")}
+  ${l.slides.map((s,i) => slideHTML(s, i+1, l.slides.length, (EXTRAS[n-1]||{tips:{}}).tips[i])).join("")}
+  ${recapHTML(EXTRAS[n-1])}
   <div class="actions">
     <button type="button" class="btn ${p.read?"on":""}" data-k="read">${p.read?"✓ Read":"Mark as read"}</button>
     <button type="button" class="btn ${p.review?"on":""}" data-k="review">${p.review?"✓ Reviewed":"Mark as reviewed"}</button>
