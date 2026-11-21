@@ -1,5 +1,5 @@
 /* Offline support: the page is fetched fresh when online and served from cache when offline. */
-const CACHE = "batch54-v1";
+const CACHE = "batch54-v2";
 const CORE = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
@@ -15,6 +15,6 @@ self.addEventListener("fetch", e => {
   }
   if (u.origin !== location.origin) return;
   // own files: network first, fall back to cache
-  e.respondWith(fetch(r).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put(r, cp)); return res; })
+  e.respondWith(fetch(r, {cache: "no-cache"}).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put(r, cp)); return res; })
     .catch(() => caches.match(r).then(hit => hit || caches.match("./index.html"))));
 });
