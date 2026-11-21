@@ -267,6 +267,7 @@ section{display:grid;gap:12px}
 .week{background:var(--night);color:var(--on-navy);border-radius:14px;padding:16px 18px;display:grid;gap:6px;border-top:4px solid var(--lamp)}
 .week .eyebrow{color:var(--on-navy);opacity:.7}
 .week p{margin:0} .week .muted{color:var(--on-navy);opacity:.75}
+.week .lbask{margin-top:10px;color:var(--ink)} .week .lbask p{color:var(--ink);font-family:var(--ar);line-height:1.7}
 .wtop{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
 .wpts{font-family:var(--display);font-weight:800;font-size:2.8rem;line-height:1;color:var(--lamp);font-variant-numeric:tabular-nums}
 .wpts small{font-family:var(--body);font-size:1rem;font-weight:500;color:var(--on-navy);opacity:.8}
@@ -1341,8 +1342,9 @@ function weekCardHTML(){
   const diff = cur.pts - prev;
   const cmp = prev === 0 && cur.pts === 0 ? "جاوبي على سؤال عشان تكسبي أول نقاطك." : prev === 0 ? "أول أسبوع ليك، واصلي كده 👏" : diff > 0 ? `أكتر من الأسبوع الفات بـ ${diff} نقطة. برافو عليك! 👏` : diff === 0 ? "نفس نقاط الأسبوع الفات." : `فاضل ليك ${-diff} نقطة عشان تلحقي الأسبوع الفات.`;
   const me = myName().trim().toLowerCase(), idx = (LEADERBOARD.rows||[]).findIndex(r => r.name.trim().toLowerCase() === me);
-  const rank = !myName() ? "اكتبي اسمك في الترتيب عشان يظهر ترتيبك." : idx >= 0 ? `ترتيبك ${idx+1} من ${LEADERBOARD.rows.length} في آخر تحديث.` : "أرسلي نقاطك عشان تظهري في الترتيب.";
-  const send = myName() && LB_FIELDS.points ? `<a class="btn go lbgo" href="${lbLink(cur.bestPct, 20, cur.pts)}" target="_blank" rel="noopener">Update my points</a>` : "";
+  const rank = !myName() ? "" : idx >= 0 ? `ترتيبك ${idx+1} من ${LEADERBOARD.rows.length} في آخر تحديث.` : "أرسلي نقاطك عشان تظهري في الترتيب.";
+  const send = !LB_FIELDS.points ? "" : myName() ? `<a class="btn go lbgo" href="${lbLink(cur.bestPct, 20, cur.pts)}" target="_blank" rel="noopener">Update my points</a>`
+    : `<div class="lbask"><p dir="rtl" lang="ar"><b>اكتبي اسمك هنا عشان يظهر ليك زر Update my points</b> وتقدري ترسلي نقاطك.</p>${nameBox("nm-week")}</div>`;
   return `<div class="week"><div class="wtop"><div><span class="eyebrow">Your week</span><div class="wpts">${cur.pts}<small> points</small></div></div><div class="wlast"><b>${prev}</b><span>last week</span></div></div>
     <p dir="rtl" lang="ar">${cmp}</p><p class="muted" dir="rtl" lang="ar">${rank}</p>${send}<a class="howlink inv" href="#how" dir="rtl" lang="ar">كيف أجمع نقاط؟</a></div>`;
 }
